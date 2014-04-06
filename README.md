@@ -1,0 +1,1 @@
+KISS Chat. Simple Java Chat client and server. Learned a little socket stuff.
