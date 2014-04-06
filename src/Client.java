@@ -10,15 +10,22 @@ public class Client {
 
 	JTextArea incoming_text;
 	JTextField outgoing_text;
+	JTextField name_text;
 	BufferedReader read_text;
 	PrintWriter write_text;
 	Socket socket;
+
+	String name = "unknown user"; // users name
 
 	public static void main(String[] args) {
 		Client client = new Client();
 		client.start();
 	}
 
+	public void getName(){
+		
+	}
+	
 	public void start() {
 		JFrame frame = new JFrame("KISS Chat");
 		JPanel mainPanel = new JPanel();
@@ -32,10 +39,23 @@ public class Client {
 		outgoing_text = new JTextField(22);
 
 		JButton send_button = new JButton("SEND");
+		JButton name_button = new JButton("USERNAME");
+		
 		send_button.addActionListener(new send_listener());
+		
+		name_button.addActionListener(new name_listener());
+		
+		name_text = new JTextField(12);
+		
+		mainPanel.add(name_text);
+		mainPanel.add(name_button);
+		
 		mainPanel.add(scroller);
+		
 		mainPanel.add(outgoing_text);
 		mainPanel.add(send_button);
+		
+		
 
 		setupNetwork();
 
@@ -51,7 +71,7 @@ public class Client {
 	private void setupNetwork() {
 
 		try {
-			socket = new Socket("localhost", 4200);
+			socket = new Socket("localhost", 5500);
 			InputStreamReader reader = new InputStreamReader(
 					socket.getInputStream());
 			read_text = new BufferedReader(reader);
@@ -62,12 +82,12 @@ public class Client {
 		}
 
 	}
-
-	public class send_listener implements ActionListener {
+	
+	public class name_listener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			try {
-				write_text.println(outgoing_text.getText());
+				name = name_text.getText();
 				write_text.flush();
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -76,17 +96,32 @@ public class Client {
 			outgoing_text.requestFocus();
 		}
 	}
-	
-	public class Incoming_Reader implements Runnable{
-		public void run(){
+
+	public class send_listener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			try {
+				write_text.println("[" + name + "] " + outgoing_text.getText());
+				write_text.flush();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			outgoing_text.setText("");
+			outgoing_text.requestFocus();
+		}
+	}
+
+	public class Incoming_Reader implements Runnable {
+		public void run() {
 			String msg;
-			try{
-				while((msg = read_text.readLine()) != null) {
+			try {
+				while ((msg = read_text.readLine()) != null) {
 					System.out.println("read " + msg);
 					incoming_text.append(msg + "\n");
 				}
-			} catch(Exception ex) {ex.printStackTrace();}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 }
-
