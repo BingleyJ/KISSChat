@@ -7,10 +7,15 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Client {
-
+	// change username
+	JFrame nameFrame = new JFrame("Change Username");
+	JPanel namePanel = new JPanel();
+	JTextField nameTxt = new JTextField(12);
+	JButton nameButton = new JButton("Name");
+	//eoChange Username
+	
 	JTextArea incoming_text;
 	JTextField outgoing_text;
-	JTextField name_text;
 	BufferedReader read_text;
 	PrintWriter write_text;
 	Socket socket;
@@ -22,10 +27,10 @@ public class Client {
 		client.start();
 	}
 
-	public void getName(){
-		
+	public void getName() {
+
 	}
-	
+
 	public void start() {
 		JFrame frame = new JFrame("KISS Chat");
 		JPanel mainPanel = new JPanel();
@@ -39,23 +44,17 @@ public class Client {
 		outgoing_text = new JTextField(22);
 
 		JButton send_button = new JButton("SEND");
-		JButton name_button = new JButton("USERNAME");
-		
+		JButton name_button = new JButton("Change Username");
+
 		send_button.addActionListener(new send_listener());
-		
 		name_button.addActionListener(new name_listener());
-		
-		name_text = new JTextField(12);
-		
-		mainPanel.add(name_text);
+
 		mainPanel.add(name_button);
-		
+
 		mainPanel.add(scroller);
-		
+
 		mainPanel.add(outgoing_text);
 		mainPanel.add(send_button);
-		
-		
 
 		setupNetwork();
 
@@ -82,18 +81,36 @@ public class Client {
 		}
 
 	}
-	
+
 	public class name_listener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			try {
-				name = name_text.getText();
-				write_text.flush();
+
+				nameButton.addActionListener(new nameChange_listener());
+				namePanel.add(nameButton);
+				namePanel.add(nameTxt);
+				nameFrame.getContentPane().add(BorderLayout.CENTER, namePanel);
+				nameFrame.setSize(250, 100);
+				nameFrame.setVisible(true);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			outgoing_text.setText("");
 			outgoing_text.requestFocus();
+		}
+	}
+
+	public class nameChange_listener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			try {
+				name = nameTxt.getText();
+				write_text.flush();
+				nameFrame.setVisible(false);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
